@@ -3,7 +3,7 @@ use std::{fs, process::Command};
 use abi_stable::std_types::{ROption, RString, RVec};
 use anyrun_plugin::*;
 use serde::Deserialize;
-use weather::{Coord, WeatherResponse};
+use weather::WeatherResponse;
 
 mod weather;
 
@@ -44,7 +44,12 @@ fn info() -> PluginInfo {
 
 #[get_matches]
 fn get_matches(input: RString, state: &mut State) -> RVec<Match> {
-    let input = if let Some(input) = input.strip_prefix(":wttr") {
+    let prefix = if let Some(config) = state.config.as_ref() {
+        config.prefix.as_str()
+    } else {
+        "wttr"
+    };
+    let _input = if let Some(input) = input.strip_prefix(prefix) {
         input.trim()
     } else {
         return RVec::new();
@@ -66,7 +71,7 @@ fn get_matches(input: RString, state: &mut State) -> RVec<Match> {
             let data: WeatherResponse = response.json().unwrap();
             state.city_id = Some(data.id);
             vec![Match {
-                title: format!("{} {}", data.main.temp, config.units.unitSuffix()).into(),
+                title: format!("{:.1} {}", data.main.temp, config.units.unitSuffix()).into(),
                 icon: ROption::RSome("weather".into()),
                 use_pango: false,
                 description: ROption::RSome(RString::from(format!(
@@ -104,7 +109,7 @@ fn get_matches(input: RString, state: &mut State) -> RVec<Match> {
 }
 
 #[handler]
-fn handler(selection: Match, state: &State) -> HandleResult {
+fn handler(_selection: Match, state: &State) -> HandleResult {
     if let Err(why) = Command::new("sh")
         .arg("-c")
         .arg(format!(
