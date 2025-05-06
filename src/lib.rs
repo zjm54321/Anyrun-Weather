@@ -7,17 +7,33 @@ use weather::WeatherResponse;
 
 mod weather;
 
+// Updated configuration now omits a fixed weather location.
 #[derive(Debug, Deserialize)]
 struct Config {
+    use_ip_location: bool,
     prefix: String,
-    weather_location: weather::Coord,
+    weather_location: GeoLocation,
     openweatherapi_key: String,
     units: weather::WeatherUnits,
+}
+
+// Structure for the geolocation response from the IP API.
+#[derive(Debug, Deserialize, Clone, Copy)]
+struct GeoLocation {
+    lat: f64,
+    lon: f64,
+    // Other fields from the API are omitted as we only need lat and lon.
 }
 
 pub struct State {
     config: Option<Config>,
     city_id: Option<i32>,
+}
+
+// Helper function that retrieves the current latitude and longitude using an external IP geolocation service.
+fn get_current_location() -> Option<GeoLocation> {
+    let response = reqwest::blocking::get("http://ip-api.com/json").ok()?;
+    response.json::<GeoLocation>().ok()
 }
 
 #[init]
@@ -56,18 +72,23 @@ fn get_matches(input: RString, state: &mut State) -> RVec<Match> {
     };
 
     if let Some(config) = &state.config {
-        //println!("Running request");
+        let location = if config.use_ip_location {
+            if let Some(geo) = get_current_location() {
+                geo
+            } else {
+                config.weather_location
+            }
+        } else {
+            config.weather_location
+        };
         let response = reqwest::blocking::get(format!(
             "https://api.openweathermap.org/data/2.5/weather?lat={}&lon={}&appid={}&units={}",
-            config.weather_location.lat,
-            config.weather_location.lon,
+            location.lat,
+            location.lon,
             config.openweatherapi_key,
             config.units.to_string()
         ));
-        //println!("Got some kind of response");
-
         if let Ok(response) = response {
-            //println!("{:?}", response);
             let data: WeatherResponse = response.json().unwrap();
             state.city_id = Some(data.id);
             vec![Match {
@@ -83,7 +104,7 @@ fn get_matches(input: RString, state: &mut State) -> RVec<Match> {
                     data.main.pressure,
                     data.name
                 ))),
-                id: ROption::RNone, // The ID can be used for identifying the match later, is not required
+                id: ROption::RNone,
             }]
             .into()
         } else {
@@ -92,7 +113,7 @@ fn get_matches(input: RString, state: &mut State) -> RVec<Match> {
                 icon: ROption::RSome("dialog-error".into()),
                 use_pango: false,
                 description: ROption::RSome("Error getting response from OpenWeatherAPI".into()),
-                id: ROption::RNone, // The ID can be used for identifying the match later, is not required
+                id: ROption::RNone,
             }]
             .into()
         }
@@ -102,7 +123,7 @@ fn get_matches(input: RString, state: &mut State) -> RVec<Match> {
             icon: ROption::RSome("dialog-error".into()),
             use_pango: false,
             description: ROption::RSome("Config either malformed or not created".into()),
-            id: ROption::RNone, // The ID can be used for identifying the match later, is not required
+            id: ROption::RNone,
         }]
         .into()
     }
