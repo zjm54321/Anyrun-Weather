@@ -14,8 +14,9 @@ Write the config in the following fashion:
 **Config format:**  
 ```
 Config(
+  use_ip_location: {true|false},
   prefix: "{your preferred prefix}",
-  weather_location: Coord(
+  weather_location: GeoLocation(
     lon: {longitude for your location}, 
     lat: {latitude for your location}
   ),
@@ -28,10 +29,11 @@ Config(
 
 ```
 Config(
-  prefix: ":wttr",
+  use_ip_location: false,
+  prefix: "wttr",
   weather_location: Coord(
-    lon: 17.03, 
-    lat: 51.10
+    lon: 0.0, 
+    lat: 0.0
   ),
   openweatherapi_key: "{removed for privacy}",
   units: Metric
