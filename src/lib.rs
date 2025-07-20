@@ -44,7 +44,6 @@ fn get_current_location() -> Option<GeoLocation> {
 fn init(config_dir: RString) -> State {
     // Detect and set system language
     let lang = get_locale().unwrap_or_else(|| String::from("en-US"));
-    rust_i18n::set_locale(&lang);
 
     State {
         config: match fs::read_to_string(format!("{}/weather.ron", config_dir)) {
@@ -69,6 +68,8 @@ fn info() -> PluginInfo {
 
 #[get_matches]
 fn get_matches(input: RString, state: &mut State) -> RVec<Match> {
+    rust_i18n::set_locale(&state.lang);
+
     let prefix = if let Some(config) = state.config.as_ref() {
         config.prefix.as_str()
     } else {

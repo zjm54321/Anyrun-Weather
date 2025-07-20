@@ -1,9 +1,9 @@
-en:
-  feels_like: "Feels like"
-  humidity: "Humidity"
-  pressure: "Pressure"
-  data_for: "Data for"
-  error_getting_weather: "Error getting weather"
-  error_openweather_api: "Error getting response from OpenWeatherAPI"
-  config_not_loaded: "Weather config not loaded"
-  config_malformed: "Config either malformed or not created"
+_version: 1
+feels_like: "Feels like"
+humidity: "Humidity"
+pressure: "Pressure"
+data_for: "Data for"
+error_getting_weather: "Error getting weather"
+error_openweather_api: "Error getting response from OpenWeatherAPI"
+config_not_loaded: "Weather config not loaded"
+config_malformed: "Config either malformed or not created"

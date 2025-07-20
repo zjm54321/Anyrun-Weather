@@ -1,9 +1,9 @@
-zh-CN:
-  feels_like: "体感温度"
-  humidity: "湿度"
-  pressure: "气压"
-  data_for: "数据来源"
-  error_getting_weather: "获取天气失败"
-  error_openweather_api: "无法从 OpenWeatherAPI 获取响应"
-  config_not_loaded: "天气配置未加载"
-  config_malformed: "配置文件格式错误或不存在"
+_version: 1
+feels_like: "体感温度"
+humidity: "湿度"
+pressure: "气压"
+data_for: "数据来源"
+error_getting_weather: "获取天气失败"
+error_openweather_api: "无法从 OpenWeatherAPI 获取响应"
+config_not_loaded: "天气配置未加载"
+config_malformed: "配置文件格式错误或不存在"
