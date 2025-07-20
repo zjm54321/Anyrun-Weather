@@ -102,7 +102,7 @@ fn get_matches(input: RString, state: &mut State) -> RVec<Match> {
             let data: WeatherResponse = response.json().unwrap();
             state.city_id = Some(data.id);
             vec![Match {
-                title: format!("{:.1} {}", data.main.temp, config.units.unitSuffix()).into(),
+                title: format!("{:.1} {}", data.main.temp, config.units.unit_suffix()).into(),
                 icon: ROption::RSome("weather".into()),
                 use_pango: false,
                 description: ROption::RSome(RString::from(format!(
@@ -110,7 +110,7 @@ fn get_matches(input: RString, state: &mut State) -> RVec<Match> {
                     data.weather.head.description,
                     rust_i18n::t!("feels_like"),
                     data.main.feels_like,
-                    config.units.unitSuffix(),
+                    config.units.unit_suffix(),
                     rust_i18n::t!("humidity"),
                     data.main.humidity,
                     rust_i18n::t!("pressure"),
