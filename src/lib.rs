@@ -97,7 +97,7 @@ fn get_matches(input: RString, state: &mut State) -> RVec<Match> {
             location.lon,
             config.openweatherapi_key,
             config.units.to_string(),
-            state.lang
+            state.lang.replace('-', "_")
         ));
         if let Ok(response) = response {
             let data: WeatherResponse = response.json().unwrap();
